@@ -27,7 +27,7 @@ func createTcpListener(proxyServer config.Proxyserver) *TCPListenerMetaData {
 
 func runTCPListener(tcpListenerMetaData *TCPListenerMetaData) {
 
-	log.Printf("Opening Listener for proxy : %s/n", tcpListenerMetaData.proxyServer.ProxyName)
+	log.Printf("Opening Listener for proxy : %s\n", tcpListenerMetaData.proxyServer.ProxyName)
 	service := fmt.Sprintf("%s:%s", tcpListenerMetaData.proxyServer.SourceItem.Bindaddress, tcpListenerMetaData.proxyServer.SourceItem.Port)
 	log.Printf("Service : %s", service)
 	tcpAddr, err := net.ResolveTCPAddr("tcp", service)
