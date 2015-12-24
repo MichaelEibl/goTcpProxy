@@ -87,6 +87,7 @@ func sendFromSourceToDestination(sourceConn, destinationConn net.Conn, tcpListen
 			log.Println(errWrite)
 			return
 		}
+		// Add this for debug
 		//log.Printf("Bytes read write %d:%d direction source->destination", readLen, writeLen)
 	}
 }
