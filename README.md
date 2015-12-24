@@ -2,14 +2,23 @@
 a go tcp proxy with multi listener ports via xml config file
 
 keep the settings.xml file in the same directory as the executable
+
 <?xml version="1.0" encoding="UTF-8"?>
+
 <proxy>
+
     <proxyserver name="Test proxy" buffersize="16384">
+    
         <source port="21000" quedconnections="20" receivebuffersize="65535"
+        
                 sendbuffersize="65535" bindaddress="0.0.0.0"/>
+                
         <destination port="9123" ipaddress="192.168.1.70"
+        
                      receivebuffersize="65535" sendbuffersize="65535"/>
+                     
     </proxyserver>
+    
 </proxy>
 
 you can supply as many nodes as you want listening tcp sockets
