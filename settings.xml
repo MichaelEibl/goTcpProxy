@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy>
+    <proxyserver name="Test proxy" buffersize="16384">
+        <source port="21000" quedconnections="20" receivebuffersize="65535"
+                sendbuffersize="65535" bindaddress="0.0.0.0"/>
+        <destination port="9123" ipaddress="10.12.143.189"
+                     receivebuffersize="65535" sendbuffersize="65535"/>
+    </proxyserver>
+
+
+
+</proxy>
