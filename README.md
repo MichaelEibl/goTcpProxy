@@ -23,8 +23,11 @@ or
 The application should look like this when it starts
 
 2015/12/24 15:19:35 Proxy Server Starting
+
 2015/12/24 15:19:35 XML data loaded ok
+
 2015/12/24 15:19:35 Name : Test proxy
+
 2015/12/24 15:19:35 Buffersize : 16384
 2015/12/24 15:19:35 	Source
 2015/12/24 15:19:35 		Port : 21000
