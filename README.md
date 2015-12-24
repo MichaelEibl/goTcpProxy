@@ -4,7 +4,6 @@ a go tcp proxy with multi listener ports via xml config file
 keep the settings.xml file in the same directory as the executable
 
 <?xml version="1.0" encoding="UTF-8"?>
-
 <proxy>
 
     <proxyserver name="Test proxy" buffersize="16384">
