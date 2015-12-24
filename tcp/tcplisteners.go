@@ -81,14 +81,15 @@ func sendFromSourceToDestination(sourceConn, destinationConn net.Conn, tcpListen
 			log.Println(errRead)
 			return
 		}
-		//writeLen, errWrite := destinationConn.Write(buf[0:readLen])
-		_, errWrite := destinationConn.Write(buf[0:readLen])
+		writeLen, errWrite := destinationConn.Write(buf[0:readLen])
 		if errWrite != nil {
 			log.Println(errWrite)
 			return
 		}
 		// Add this for debug
-		//log.Printf("Bytes read write %d:%d direction source->destination", readLen, writeLen)
+		if *config.DebugFlag {
+			log.Printf("Bytes read write %d:%d direction source->destination", readLen, writeLen)
+		}
 	}
 }
 
@@ -106,13 +107,15 @@ func sendFromDestinationToSource(sourceConn, destinationConn net.Conn, tcpListen
 			log.Println(errRead)
 			return
 		}
-		//writeLen, errWrite := sourceConn.Write(buf[0:readLen])
-		_, errWrite := sourceConn.Write(buf[0:readLen])
+		writeLen, errWrite := sourceConn.Write(buf[0:readLen])
 		if errWrite != nil {
 			log.Println(errWrite)
 			return
 		}
-		//log.Printf("Bytes read write %d:%d direction destination->source", readLen, writeLen)
+		if *config.DebugFlag {
+			log.Printf("Bytes read write %d:%d direction destination->source", readLen, writeLen)
+		}
+
 	}
 }
 

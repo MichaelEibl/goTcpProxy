@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"soffex.co.za/tcpproxy/config"
 	"soffex.co.za/tcpproxy/tcp"
+	"flag"
 )
 
 var quit = make(chan os.Signal, 1)
 
 func main() {
+	flag.Parse()
 	signal.Notify(quit, os.Interrupt, os.Kill)
 	log.Println("Proxy Server Starting")
 	config.LoadConfig("settings.xml")
