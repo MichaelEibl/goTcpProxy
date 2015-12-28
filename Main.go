@@ -4,8 +4,8 @@ import (
 	"os"
 	"os/signal"
 	"fmt"
-	"soffex.co.za/tcpproxy/config"
-	"soffex.co.za/tcpproxy/tcp"
+	"github.com/MichaelEibl/goTcpProxy/config"
+	"github.com/MichaelEibl/goTcpProxy/tcp"
 	"flag"
 )
 

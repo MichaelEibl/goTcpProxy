@@ -4,7 +4,7 @@ import (
 	"net"
 	"fmt"
 	"strconv"
-	"soffex.co.za/tcpproxy/config"
+	"github.com/MichaelEibl/goTcpProxy/config"
 )
 
 
