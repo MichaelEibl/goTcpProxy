@@ -5,7 +5,7 @@ import (
 	"net"
 	"fmt"
 	"strconv"
-	"github.com/MichaelEibl/goTcpProxy/config"
+	"github.com/michaeleibl/goTcpProxy/config"
 )
 
 type TCPListenerMetaData struct {

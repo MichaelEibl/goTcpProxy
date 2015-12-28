@@ -5,8 +5,8 @@ import (
 	"os"
 	"os/signal"
 	"fmt"
-	"github.com/MichaelEibl/goTcpProxy/config"
-	"github.com/MichaelEibl/goTcpProxy/tcp"
+	"github.com/michaeleibl/goTcpProxy/config"
+	"github.com/michaeleibl/goTcpProxy/tcp"
 	"flag"
 )
 
