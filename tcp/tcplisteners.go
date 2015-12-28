@@ -1,4 +1,5 @@
 package tcp
+
 import (
 	"log"
 	"net"
@@ -7,11 +8,9 @@ import (
 	"github.com/MichaelEibl/goTcpProxy/config"
 )
 
-
 type TCPListenerMetaData struct {
 	proxyServer config.Proxyserver
 }
-
 
 func StartTCPListener(proxyServer config.Proxyserver) {
 	tcpListener := createTcpListener(proxyServer)
@@ -20,7 +19,6 @@ func StartTCPListener(proxyServer config.Proxyserver) {
 
 func createTcpListener(proxyServer config.Proxyserver) *TCPListenerMetaData {
 	tcpTempListner := &TCPListenerMetaData{proxyServer, }
-
 
 	return tcpTempListner
 }
@@ -37,7 +35,7 @@ func runTCPListener(tcpListenerMetaData *TCPListenerMetaData) {
 	log.Printf("Binding listener IP[%s] and Port[%d]", tcpAddr.IP.String(), tcpAddr.Port)
 	tcpListener, errListen := net.ListenTCP("tcp", tcpAddr)
 	if errListen != nil {
-		log.Fatalln(errListen)
+		log.Printf("Could not bind listener error [%s]", errListen.Error())
 	}
 	for {
 		sourceConn, errAccept := tcpListener.Accept()
