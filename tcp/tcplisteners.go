@@ -30,7 +30,8 @@ func runTCPListener(tcpListenerMetaData *TCPListenerMetaData) {
 	log.Printf("Service : %s", service)
 	tcpAddr, err := net.ResolveTCPAddr("tcp", service)
 	if err != nil {
-		log.Fatalln(err)
+		log.Printf("Error in Resolve TCP [%s]", err.Error())
+		return
 	}
 	log.Printf("Binding listener IP[%s] and Port[%d]", tcpAddr.IP.String(), tcpAddr.Port)
 	tcpListener, errListen := net.ListenTCP("tcp", tcpAddr)
