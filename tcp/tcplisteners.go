@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 	"strconv"
-	"github.com/michaeleibl/goTcpProxy/config"
+	"github.com/michaeleibl/tcpproxy/config"
 	"fmt"
 )
 

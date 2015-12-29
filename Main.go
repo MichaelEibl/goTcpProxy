@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"github.com/michaeleibl/goTcpProxy/config"
-	"github.com/michaeleibl/goTcpProxy/tcp"
+	"github.com/michaeleibl/tcpproxy/config"
+	"github.com/michaeleibl/tcpproxy/tcp"
 	"flag"
 )
 
