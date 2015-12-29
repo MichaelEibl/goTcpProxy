@@ -17,6 +17,8 @@ func main() {
 		log.Print("Trying to recover in main")
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in f in main", r)
+		} else {
+			fmt.Println("No need to recover in main - all good")
 		}
 
 	}()
@@ -41,9 +43,11 @@ func main() {
 
 func safeStart(proxyServer config.Proxyserver) {
 	defer func() {
-		log.Print("Trying to recover")
+		log.Print(">>>>>>>>>>>>>>>>>>Recover function call to check panic")
 		if r := recover(); r != nil {
-			fmt.Println("Recovered in f", r)
+			log.Println("Recovered in f", r)
+		} else {
+			log.Println("Everything was fine")
 		}
 
 	}()

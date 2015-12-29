@@ -36,8 +36,9 @@ func runTCPListener(tcpListenerMetaData *TCPListenerMetaData) {
 	log.Printf("Binding listener IP[%s] and Port[%d]", tcpAddr.IP.String(), tcpAddr.Port)
 	tcpListener, errListen := net.ListenTCP("tcp", tcpAddr)
 	if errListen != nil {
-		log.Printf("Could not bind listener error [%s]", errListen.Error())
-		return
+		//log.Printf("Could not bind listener error [%s]", errListen.Error())
+		panic(fmt.Sprintf("Could not bind listener error [%s]", errListen.Error()))
+		//return
 	}
 	for {
 		sourceConn, errAccept := tcpListener.Accept()
