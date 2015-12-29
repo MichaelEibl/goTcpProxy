@@ -78,4 +78,7 @@ func printData() {
 		log.Printf("\t\tSendbuffersize : %s\n", proxyServer.DestinationItem.Sendbuffersize)
 		log.Printf("\t\tIpaddress : %s\n", proxyServer.DestinationItem.Ipaddress)
 	}
+	log.Println()
+	log.Println()
+	log.Println()
 }

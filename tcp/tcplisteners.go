@@ -3,9 +3,9 @@ package tcp
 import (
 	"log"
 	"net"
-	"fmt"
 	"strconv"
 	"github.com/michaeleibl/goTcpProxy/config"
+	"fmt"
 )
 
 type TCPListenerMetaData struct {
@@ -24,7 +24,15 @@ func createTcpListener(proxyServer config.Proxyserver) *TCPListenerMetaData {
 }
 
 func runTCPListener(tcpListenerMetaData *TCPListenerMetaData) {
+	defer func() {
+		log.Print(">>>>>>>>>>>>>>>>>>Recover function call to check panic in runTCPListener")
+		if r := recover(); r != nil {
+			log.Println("Recovered in runTCPListener", r)
+		} else {
+			log.Println("Everything was fine in runTCPListener")
+		}
 
+	}()
 	log.Printf("Opening Listener for proxy : %s\n", tcpListenerMetaData.proxyServer.ProxyName)
 	service := fmt.Sprintf("%s:%s", tcpListenerMetaData.proxyServer.SourceItem.Bindaddress, tcpListenerMetaData.proxyServer.SourceItem.Port)
 	log.Printf("Service : %s", service)
@@ -33,19 +41,22 @@ func runTCPListener(tcpListenerMetaData *TCPListenerMetaData) {
 		log.Printf("Error in Resolve TCP [%s]", err.Error())
 		return
 	}
-	log.Printf("Binding listener IP[%s] and Port[%d]", tcpAddr.IP.String(), tcpAddr.Port)
+	log.Printf("BEFORE - Binding listener IP[%s] and Port[%d]", tcpAddr.IP.String(), tcpAddr.Port)
 	tcpListener, errListen := net.ListenTCP("tcp", tcpAddr)
 	if errListen != nil {
 		//log.Printf("Could not bind listener error [%s]", errListen.Error())
 		panic(fmt.Sprintf("Could not bind listener error [%s]", errListen.Error()))
 		//return
 	}
+
+	log.Printf("AFTER - Binding listener IP[%s] and Port[%d]", tcpAddr.IP.String(), tcpAddr.Port)
+
 	for {
 		sourceConn, errAccept := tcpListener.Accept()
 		if errAccept != nil {
 			log.Fatalln(errAccept)
 		}
-		fmt.Printf("Accepted connection : %+v\n", sourceConn.RemoteAddr().String())
+		log.Printf("Accepted connection : %+v\n", sourceConn.RemoteAddr().String())
 		destinationConn := createDestination(tcpListenerMetaData)
 
 		go sendFromSourceToDestination(sourceConn, destinationConn, tcpListenerMetaData)

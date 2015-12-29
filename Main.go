@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"fmt"
 	"github.com/michaeleibl/goTcpProxy/config"
 	"github.com/michaeleibl/goTcpProxy/tcp"
 	"flag"
@@ -16,9 +15,9 @@ func main() {
 	defer func() {
 		log.Print("Trying to recover in main")
 		if r := recover(); r != nil {
-			fmt.Println("Recovered in f in main", r)
+			log.Println("Recovered in f in main", r)
 		} else {
-			fmt.Println("No need to recover in main - all good")
+			log.Println("No need to recover in main - all good")
 		}
 
 	}()
@@ -28,30 +27,33 @@ func main() {
 	log.Println("Proxy Server Starting")
 	config.LoadConfig("settings.xml")
 
-	for _, proxyServer := range config.ProxyData.ProxyserverItems {
-		safeStart(proxyServer)
-	}
+	go startListeningServers()
 
 	select {
 	case <-quit:
 	// received a kill or interrupt on the channel
-		fmt.Printf("Application quitting\n")
+		log.Printf("Application quitting\n")
 		return
 	}
 
 }
 
-func safeStart(proxyServer config.Proxyserver) {
+func startListeningServers() {
 	defer func() {
-		log.Print(">>>>>>>>>>>>>>>>>>Recover function call to check panic")
-		if r := recover(); r != nil {
-			log.Println("Recovered in f", r)
+		log.Print("Trying to recover in startListeningServers")
+		if err := recover(); err != nil {
+			log.Println("Recovered in startListeningServers", err)
 		} else {
-			log.Println("Everything was fine")
+			log.Println("No need to recover in startListeningServers - all good")
 		}
 
 	}()
+	for _, proxyServer := range config.ProxyData.ProxyserverItems {
+		safeStart(proxyServer)
+	}
+}
 
+func safeStart(proxyServer config.Proxyserver) {
 	log.Printf("Starting Listening Server %s", proxyServer.ProxyName)
 	tcp.StartTCPListener(proxyServer)
 }
