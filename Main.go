@@ -55,5 +55,5 @@ func startListeningServers() {
 
 func safeStart(proxyServer config.Proxyserver) {
 	log.Printf("Starting Listening Server %s", proxyServer.ProxyName)
-	tcp.StartTCPListener(proxyServer)
+	tcp.StartTCPListener(proxyServer, tcp.NewDataInspection())
 }
