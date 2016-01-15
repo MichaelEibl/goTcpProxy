@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"github.com/michaeleibl/goTcpProxy/config"
-	"github.com/michaeleibl/goTcpProxy/tcp"
+	"github.com/michaeleibl/tcpproxy/config"
+	"github.com/michaeleibl/tcpproxy/tcp"
 	"flag"
 )
 
@@ -55,5 +55,5 @@ func startListeningServers() {
 
 func safeStart(proxyServer config.Proxyserver) {
 	log.Printf("Starting Listening Server %s", proxyServer.ProxyName)
-	tcp.StartTCPListener(proxyServer)
+	tcp.StartTCPListener(proxyServer, tcp.NewDataInspection())
 }

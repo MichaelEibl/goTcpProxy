@@ -4,21 +4,23 @@ import (
 	"log"
 	"net"
 	"strconv"
-	"github.com/michaeleibl/goTcpProxy/config"
+	"github.com/michaeleibl/tcpproxy/config"
 	"fmt"
 )
 
 type TCPListenerMetaData struct {
 	proxyServer config.Proxyserver
+	filter PacketFilter
 }
 
-func StartTCPListener(proxyServer config.Proxyserver) {
-	tcpListener := createTcpListener(proxyServer)
+func StartTCPListener(proxyServer config.Proxyserver, filter PacketFilter) {
+	tcpListener := createTcpListener(proxyServer, filter)
 	go runTCPListener(tcpListener)
 }
 
-func createTcpListener(proxyServer config.Proxyserver) *TCPListenerMetaData {
-	tcpTempListner := &TCPListenerMetaData{proxyServer, }
+func createTcpListener(proxyServer config.Proxyserver, filter PacketFilter) *TCPListenerMetaData {
+	tcpTempListner := &TCPListenerMetaData{proxyServer,
+		filter,}
 
 	return tcpTempListner
 }
@@ -93,6 +95,10 @@ func sendFromSourceToDestination(sourceConn, destinationConn net.Conn, tcpListen
 			log.Println(errRead)
 			return
 		}
+		// call the filter
+		if tcpListenerMetaData != nil && tcpListenerMetaData.filter != nil {
+			tcpListenerMetaData.filter.Filter(buf[0:readLen], SourceToDestination)
+		}
 		writeLen, errWrite := destinationConn.Write(buf[0:readLen])
 		if errWrite != nil {
 			log.Println(errWrite)
@@ -118,6 +124,10 @@ func sendFromDestinationToSource(sourceConn, destinationConn net.Conn, tcpListen
 		if errRead != nil {
 			log.Println(errRead)
 			return
+		}
+		// call the filter
+		if tcpListenerMetaData != nil && tcpListenerMetaData.filter != nil {
+			tcpListenerMetaData.filter.Filter(buf[0:readLen], DestinationToSource)
 		}
 		writeLen, errWrite := sourceConn.Write(buf[0:readLen])
 		if errWrite != nil {
