@@ -12,4 +12,10 @@
         <destination port="9123" ipaddress="192.168.1.70"
                      receivebuffersize="65535" sendbuffersize="65535"/>
     </proxyserver>
+    <proxyserver name="ASE" buffersize="16384">
+        <source port="5005" quedconnections="20" receivebuffersize="65535"
+                sendbuffersize="65535" bindaddress="0.0.0.0"/>
+        <destination port="5000" ipaddress="10.147.37.122"
+                     receivebuffersize="65535" sendbuffersize="65535"/>
+    </proxyserver>
 </proxy>

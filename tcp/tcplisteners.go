@@ -6,11 +6,30 @@ import (
 	"strconv"
 	"github.com/michaeleibl/tcpproxy/config"
 	"fmt"
+	"time"
 )
+
+var closeComs = make(chan net.Conn)
 
 type TCPListenerMetaData struct {
 	proxyServer config.Proxyserver
-	filter PacketFilter
+	filter      PacketFilter
+}
+
+func Init() {
+	go closeSockets();
+}
+
+func closeSockets() {
+	for {
+		select {
+		case coms := <-closeComs:
+			if coms != nil {
+				coms.Close()
+			}
+
+		}
+	}
 }
 
 func StartTCPListener(proxyServer config.Proxyserver, filter PacketFilter) {
@@ -20,7 +39,7 @@ func StartTCPListener(proxyServer config.Proxyserver, filter PacketFilter) {
 
 func createTcpListener(proxyServer config.Proxyserver, filter PacketFilter) *TCPListenerMetaData {
 	tcpTempListner := &TCPListenerMetaData{proxyServer,
-		filter,}
+		filter, }
 
 	return tcpTempListner
 }
@@ -61,24 +80,36 @@ func runTCPListener(tcpListenerMetaData *TCPListenerMetaData) {
 		log.Printf("Accepted connection : %+v\n", sourceConn.RemoteAddr().String())
 		destinationConn := createDestination(tcpListenerMetaData)
 
-		go sendFromSourceToDestination(sourceConn, destinationConn, tcpListenerMetaData)
+		readTime := time.Time{}
+		readTime.Add(time.Millisecond * 1000)
+		errSetDeadlineSource := sourceConn.SetDeadline(readTime)
+		if errSetDeadlineSource != nil {
+			log.Fatalf("Cannot set deadline on socket %s ", errSetDeadlineSource)
+		}
+		errSetDeadlineDestination := destinationConn.SetDeadline(readTime)
+		if errSetDeadlineDestination != nil {
+			log.Fatalf("Cannot set deadline on socket %s ", errSetDeadlineDestination)
+		}
+
 		go sendFromDestinationToSource(sourceConn, destinationConn, tcpListenerMetaData)
+		go sendFromSourceToDestination(sourceConn, destinationConn, tcpListenerMetaData)
 	}
 
 }
 
 func createDestination(tcpListenerMetaData *TCPListenerMetaData) net.Conn {
 	service := fmt.Sprintf("%s:%s", tcpListenerMetaData.proxyServer.DestinationItem.Ipaddress, tcpListenerMetaData.proxyServer.DestinationItem.Port)
-	conn, err := net.Dial("tcp", service)
+	conn, err := net.DialTimeout("tcp", service, time.Millisecond * 1500)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Cannot connect to distination host ", err)
 	}
+	log.Printf("Connected to destination host %s on port %s", tcpListenerMetaData.proxyServer.DestinationItem.Ipaddress, tcpListenerMetaData.proxyServer.DestinationItem.Port)
 	return conn
 }
 
 func closeConnections(sourceConn, destinationConn net.Conn) {
-	sourceConn.Close()
-	destinationConn.Close()
+	closeComs <- sourceConn
+	closeComs <- destinationConn
 }
 
 func sendFromSourceToDestination(sourceConn, destinationConn net.Conn, tcpListenerMetaData *TCPListenerMetaData) {
@@ -88,12 +119,18 @@ func sendFromSourceToDestination(sourceConn, destinationConn net.Conn, tcpListen
 		log.Fatalf("Buffer receive is wrong %s ", tcpListenerMetaData.proxyServer.SourceItem.Receivebuffersize)
 	}
 	var buf = make([]byte, value)
+
+
+	//time.Sleep(time.Millisecond * 2500)
+
 	for {
 		// read the bytes into the buffer
 		readLen, errRead := sourceConn.Read(buf[0:])
 		if errRead != nil {
-			log.Println(errRead)
-			return
+			log.Printf("Source Read error %s Data Read %d", errRead, readLen)
+			if errRead.Error() == "EOF" || readLen == 0 {
+				return
+			}
 		}
 		// call the filter
 		if tcpListenerMetaData != nil && tcpListenerMetaData.filter != nil {
@@ -101,7 +138,7 @@ func sendFromSourceToDestination(sourceConn, destinationConn net.Conn, tcpListen
 		}
 		writeLen, errWrite := destinationConn.Write(buf[0:readLen])
 		if errWrite != nil {
-			log.Println(errWrite)
+			log.Printf("Destination write error %s ", errWrite)
 			return
 		}
 		// Add this for debug
@@ -122,7 +159,10 @@ func sendFromDestinationToSource(sourceConn, destinationConn net.Conn, tcpListen
 		// read the bytes into the buffer
 		readLen, errRead := destinationConn.Read(buf[0:])
 		if errRead != nil {
-			log.Println(errRead)
+			log.Printf("Destination read error %s ", errRead)
+			if errRead.Error() == "EOF" || readLen == 0 {
+				return
+			}
 			return
 		}
 		// call the filter
@@ -131,7 +171,7 @@ func sendFromDestinationToSource(sourceConn, destinationConn net.Conn, tcpListen
 		}
 		writeLen, errWrite := sourceConn.Write(buf[0:readLen])
 		if errWrite != nil {
-			log.Println(errWrite)
+			log.Printf("Source write error %s", errWrite)
 			return
 		}
 		if *config.DebugFlag {
